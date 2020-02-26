@@ -12,6 +12,7 @@
 
 
 </head>
+<script type="application/javascript"></script>
 <body>
 <div th:insert="~{navigation :: nav}"></div>
 <div class="container-fluid main">
@@ -32,10 +33,32 @@
                 </div>
                 <div class="form-group">
                     <label for="tag">添加标签:</label>
-                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag" placeholder="输入标签 以逗号分隔">
+                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag" autocomplete="off" placeholder="输入标签 以逗号分隔" onclick="showSelectTag()">
+                    <div id="select-tag" class="publish-tag-tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" th:each="selectCategory,selectCategoryStat: ${tags}"
+                                th:class="${selectCategoryStat.first ? 'active':''}">
+                                <a th:href="${'#'+selectCategory.categoryName}" aria-controls="home" role="tab"
+                                   data-toggle="tab" th:text="${selectCategory.categoryName}"></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" th:id="${selectCategory.categoryName}"
+                                 th:each="selectCategory: ${tags}"
+                                 th:class="${selectCategoryStat.first ? 'active tab-pane':'tab-pane'}">
+                                <span>
+                                    <span th:each="selectTag: ${selectCategory.tags}">
+                                    <span class="community-tag" onclick="selectTag(this)"
+                                          th:data-tag="${selectTag}"
+                                          th:text="${' '+selectTag}">
+                                    </span>
+                                </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="alert alert-danger" th:text="${error}" th:if="${error!=null}"></div>
-
                 <button type="submit" class="btn btn-success btn-publish">发布</button>
             </form>
         </div>
@@ -47,6 +70,23 @@
         </div>
     </div>
 </div>
+<script>
+    function showSelectTag() {
+        $("#select-tag").show();
 
+    }
+    function selectTag(e) {
+        var value = e.getAttribute("data-tag");
+        var previous = $("#tag").val();
+        if (previous.indexOf(value) == -1) {
+            if (previous) {
+                $("#tag").val(previous + ',' + value);
+            } else {
+                $("#tag").val(value);
+            }
+        }
+        
+    }
+</script>
 </body>
 </html>
